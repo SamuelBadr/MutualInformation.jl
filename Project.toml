@@ -1,0 +1,19 @@
+name = "MutualInformation"
+uuid = "fc1f205a-2370-473e-8a5a-7b378b76b007"
+version = "0.1.0"
+authors = ["Samuel Badr <samuel.badr@gmail.com>"]
+
+[deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+QuanticsGrids = "634c7f73-3e90-4749-a1bd-001b8efc642d"
+
+[compat]
+CairoMakie = "0.15.7"
+QuanticsGrids = "0.6.0"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
