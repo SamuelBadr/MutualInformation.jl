@@ -12,7 +12,7 @@ R = 9  # Number of qubits
 grid = QG.DiscretizedGrid(R, -1.0, +1.0)
 
 # Define the original function
-f(x) = sin(20 * π * x) * exp(-x^2)  # Multi-scale: fast oscillations with Gaussian envelope
+f(x) = sin(200 * π * x) * exp(-x^2)  # Multi-scale: fast oscillations with Gaussian envelope
 
 # Define the quantics version of the function
 qf(qx) = f(QG.quantics_to_origcoord(grid, qx))
@@ -20,7 +20,8 @@ qf(qx) = f(QG.quantics_to_origcoord(grid, qx))
 # Compute the mutual information matrix
 # Uses unified API - automatically selects exact method since R=9 < 14
 println("Computing mutual information matrix for R=$R qubits...")
-@time MI_matrix = MI.mutualinformation(qf, R; method=:sampled, n_samples=10_000)
+# @time MI_matrix = MI.mutualinformation(qf, R; method=:sampled, n_samples=10_000)
+MI_matrix = MI.mutualinformation(qf, R)#; method=:sampled, n_samples=10_000)
 
 println("\nMutual Information Matrix:")
 display(MI_matrix)
