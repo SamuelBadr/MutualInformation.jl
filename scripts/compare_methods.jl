@@ -20,7 +20,7 @@ len_small = 8
 f_simple(x) = exp(-sum((xi - 1.5)^2 for xi in x) / 2)
 
 println("\nComputing exact MI matrix (len=$len_small)...")
-@time MI_exact = MI.mutualinformation(Float64, f_simple, fill(2, len_small))
+@time MI_exact = MI.mutualinformation(f_simple, fill(2, len_small))
 
 println("\nComputing sampled MI matrix (n_samples=50000)...")
 @time MI_sampled = MI.mutualinformation_sampled(Float64, f_simple, len_small; n_samples=50000)

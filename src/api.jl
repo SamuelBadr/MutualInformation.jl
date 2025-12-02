@@ -2,18 +2,17 @@
 # Automatically selects between exact and sampling methods
 
 """
-    mutualinformation(::Type{T}, f::F, len::Int;
+    mutualinformation(f::F, len::Int;
                      method=:auto,
                      threshold=14,
-                     n_samples=100000) where {T,F}
+                     n_samples=100000) where {F}
 
 Calculate mutual information between all pairs of sites in a quantum state.
 
 Automatically selects the appropriate method (exact or sampling) based on system size.
 
 # Arguments
-- `T`: Return type of function f (e.g., Float64, ComplexF64)
-- `f`: Function taking `Vector{Int}` (values in {1,2,...}) and returning type T
+- `f`: Function taking `Vector{Int}` (values in {1,2,...}) and returning a numeric value
 - `len`: Number of sites/bits in the system
 
 # Keyword Arguments
@@ -48,29 +47,29 @@ The function automatically chooses the best method based on system size:
 ```julia
 # Small system - automatically uses exact method
 f(x) = exp(-sum((x[i] - 1.5)^2 for i in eachindex(x)))
-MI = mutualinformation(Float64, f, 10)
+MI = mutualinformation(f, 10)
 
 # Large system - automatically uses sampling method
-MI = mutualinformation(Float64, f, 30)
+MI = mutualinformation(f, 30)
 
 # Force exact method for medium system
-MI = mutualinformation(Float64, f, 15; method=:exact)
+MI = mutualinformation(f, 15; method=:exact)
 
 # Force sampling with more samples
-MI = mutualinformation(Float64, f, 10; method=:sampled, n_samples=200000)
+MI = mutualinformation(f, 10; method=:sampled, n_samples=200000)
 
 # Adjust auto-selection threshold
-MI = mutualinformation(Float64, f, 16; threshold=16)  # Uses exact for len=16
+MI = mutualinformation(f, 16; threshold=16)  # Uses exact for len=16
 ```
 
 # See Also
 - `mutualinformation_exact`: Direct access to exact method
 - `mutualinformation_sampled`: Direct access to sampling method
 """
-function mutualinformation(::Type{T}, f::F, len::Int;
-                          method::Symbol=:auto,
-                          threshold::Int=14,
-                          n_samples::Int=100000) where {T,F}
+function mutualinformation(f::F, len::Int;
+    method::Symbol=:auto,
+    threshold::Int=14,
+    n_samples::Int=100000) where {F}
 
     # Validate method parameter
     if !(method in (:auto, :exact, :sampled))
@@ -95,17 +94,17 @@ function mutualinformation(::Type{T}, f::F, len::Int;
     if use_exact
         # For exact method, we need localdims vector
         localdims = fill(2, len)
-        return mutualinformation_exact(T, f, localdims)
+        return mutualinformation_exact(f, localdims)
     else
-        return mutualinformation_sampled(T, f, len; n_samples=n_samples)
+        return mutualinformation_sampled(f, len; n_samples=n_samples)
     end
 end
 
 """
-    mutualinformation(::Type{T}, f::F, localdims::AbstractVector{<:Integer};
+    mutualinformation(f::F, localdims::AbstractVector{<:Integer};
                      method=:auto,
                      threshold=14,
-                     n_samples=100000) where {T,F}
+                     n_samples=100000) where {F}
 
 Calculate mutual information with non-uniform local dimensions.
 
@@ -113,7 +112,6 @@ This variant allows specifying different local dimensions for each site (e.g.,
 mixing qubits and qutrits). Currently only supports exact method.
 
 # Arguments
-- `T`: Return type of function f
 - `f`: Function taking `Vector{Int}` where `x[i] ∈ {1, ..., localdims[i]}`
 - `localdims`: Vector of local dimensions for each site
 
@@ -130,13 +128,13 @@ method is designed for uniform binary systems.
 ```julia
 # Mixed qubit-qutrit system
 f(x) = exp(-sum((x[i] - 1.5)^2 for i in eachindex(x)))
-MI = mutualinformation(Float64, f, [2, 2, 3, 2])  # 3 qubits + 1 qutrit
+MI = mutualinformation(f, [2, 2, 3, 2])  # 3 qubits + 1 qutrit
 ```
 """
-function mutualinformation(::Type{T}, f::F, localdims::AbstractVector{<:Integer};
-                          method::Symbol=:auto,
-                          threshold::Int=14,
-                          n_samples::Int=100000) where {T,F}
+function mutualinformation(f::F, localdims::AbstractVector{<:Integer};
+    method::Symbol=:auto,
+    threshold::Int=14,
+    n_samples::Int=100000) where {F}
 
     L = length(localdims)
 
@@ -151,7 +149,7 @@ function mutualinformation(::Type{T}, f::F, localdims::AbstractVector{<:Integer}
     # Non-uniform dimensions only support exact method
     if !all_binary && method == :sampled
         throw(ArgumentError("Sampling method only supports uniform binary systems (all localdims=2). " *
-                          "Use method=:exact for non-uniform dimensions."))
+                            "Use method=:exact for non-uniform dimensions."))
     end
 
     # Determine which method to use
@@ -169,9 +167,9 @@ function mutualinformation(::Type{T}, f::F, localdims::AbstractVector{<:Integer}
 
     # Dispatch to appropriate method
     if use_exact
-        return mutualinformation_exact(T, f, localdims)
+        return mutualinformation_exact(f, localdims)
     else
         # All binary, use sampling
-        return mutualinformation_sampled(T, f, L; n_samples=n_samples)
+        return mutualinformation_sampled(f, L; n_samples=n_samples)
     end
 end

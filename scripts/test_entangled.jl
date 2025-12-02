@@ -19,7 +19,7 @@ println("="^70)
 f_bell(x) = (x == [1, 1] || x == [2, 2]) ? 1.0/sqrt(2) : 0.0
 
 println("\nExact MI:")
-MI_bell_exact = MI.mutualinformation(Float64, f_bell, [2, 2])
+MI_bell_exact = MI.mutualinformation(f_bell, [2, 2])
 display(MI_bell_exact)
 @printf("\nExpected: %.6f nats (2*log(2))\n", 2*log(2))
 
@@ -44,7 +44,7 @@ function f_w(x)
 end
 
 println("\nExact MI:")
-@time MI_w_exact = MI.mutualinformation(Float64, f_w, fill(2, 5))
+@time MI_w_exact = MI.mutualinformation(f_w, fill(2, 5))
 println("Sample values:")
 @printf("  MI[1,2] = %.6f\n", MI_w_exact[1, 2])
 @printf("  MI[1,3] = %.6f\n", MI_w_exact[1, 3])

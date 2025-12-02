@@ -45,12 +45,12 @@ The sampling method uses **uniform sampling** of configurations, which works bes
 
 ### Sample Size Recommendations
 
-| System Size (len) | Recommended n_samples | Expected Accuracy | Time (approx) |
-|-------------------|----------------------|-------------------|---------------|
-| 15-20             | 50,000              | 10-15% rel error  | <1 second     |
-| 20-30             | 100,000             | 10-20% rel error  | 1-5 seconds   |
-| 30-50             | 200,000             | 15-25% rel error  | 5-20 seconds  |
-| 50+               | 500,000+            | 20-30% rel error  | 30+ seconds   |
+| System Size (len) | Recommended n_samples | Expected Accuracy | Time (approx)  |
+|-------------------|-----------------------|-------------------|----------------|
+| 15-20             | 50,000                | 10-15% rel error  | <1 second      |
+| 20-30             | 100,000               | 10-20% rel error  | 1-5 seconds    |
+| 30-50             | 200,000               | 15-25% rel error  | 5-20 seconds   |
+| 50+               | 500,000+              | 20-30% rel error  | 30+ seconds    |
 
 ### Distribution Types and Performance
 

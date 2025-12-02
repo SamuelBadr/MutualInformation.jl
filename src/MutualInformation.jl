@@ -9,6 +9,7 @@ export mutualinformation
 export mutualinformation_exact, mutualinformation_sampled
 
 # Include implementation files
+include("utils.jl")      # Shared utility functions
 include("exact.jl")      # Exact computation methods
 include("sampling.jl")   # Sampling-based approximation
 include("api.jl")        # Unified API dispatcher
