@@ -1,8 +1,6 @@
 # Monte Carlo sampling-based approximation for mutual information
 # Suitable for large systems where exact calculation is infeasible
 
-using LinearAlgebra
-
 """
     mutualinformation_sampled(f::F, len::Int; n_samples=100000) where {F}
 
@@ -20,7 +18,7 @@ computes von Neumann entropies.
 - `len × len` symmetric matrix of mutual information values in nats
 
 # Complexity
-- Time: O(len² × n_samples × 4) - factor of 4 from full density matrix estimation
+- Time: O(len² / 2 × n_samples × 4) - factor of 4 from full density matrix estimation
 - Space: O(len × n_samples)
 
 # Method
@@ -50,9 +48,9 @@ f(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
 MI = mutualinformation_sampled(f, 30; n_samples=100000)
 ```
 """
-function mutualinformation_sampled(f::F, len::Int; n_samples::Int=100000) where {F}
+function mutualinformation_sampled(f::F, len::Int; n_samples::Int=100000, rng=default_rng()) where {F}
     # Generate random configurations uniformly
-    samples = [rand(1:2, len) for _ in 1:n_samples]
+    samples = [rand(rng, 1:2, len) for _ in 1:n_samples]
 
     # Precompute f(x) for all samples (avoids recomputation)
     f_vals = [f(x) for x in samples]

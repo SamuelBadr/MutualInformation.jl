@@ -20,7 +20,7 @@ qf(qx) = f(QG.quantics_to_origcoord(grid, qx))
 # Compute the mutual information matrix
 # Uses unified API - automatically selects exact method since R=9 < 14
 println("Computing mutual information matrix for R=$R qubits...")
-MI_matrix = MI.mutualinformation(qf, R; method=:sampled, n_samples=10_000)
+@time MI_matrix = MI.mutualinformation(qf, R; method=:sampled, n_samples=10_000)
 
 println("\nMutual Information Matrix:")
 display(MI_matrix)

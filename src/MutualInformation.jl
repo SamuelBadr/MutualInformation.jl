@@ -1,6 +1,7 @@
 module MutualInformation
 
-using LinearAlgebra
+using LinearAlgebra: eigvals!, Hermitian, tr
+using Random: default_rng
 
 # Export main API function
 export mutualinformation

@@ -68,8 +68,9 @@ MI = mutualinformation(f, 16; threshold=16)  # Uses exact for len=16
 """
 function mutualinformation(f::F, len::Int;
     method::Symbol=:auto,
-    threshold::Int=14,
-    n_samples::Int=100000) where {F}
+    threshold::Int=10,
+    n_samples::Int=100_000,
+    rng=default_rng()) where {F}
 
     # Validate method parameter
     if !(method in (:auto, :exact, :sampled))
@@ -96,7 +97,7 @@ function mutualinformation(f::F, len::Int;
         localdims = fill(2, len)
         return mutualinformation_exact(f, localdims)
     else
-        return mutualinformation_sampled(f, len; n_samples=n_samples)
+        return mutualinformation_sampled(f, len; n_samples, rng)
     end
 end
 

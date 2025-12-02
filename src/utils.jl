@@ -20,7 +20,7 @@ where the sum is over all positive eigenvalues.
 """
 function von_neumann_entropy(ρ)
     # Compute eigenvalues, treating ρ as Hermitian for numerical stability
-    eigvals_ρ = eigvals(Hermitian(ρ))
+    eigvals_ρ = eigvals!(Hermitian(ρ))
     # Filter out numerical zeros to avoid log(0)
     eigvals_ρ = filter(λ -> λ > 1e-14, eigvals_ρ)
     # Compute entropy: S = -sum(λ log λ)
