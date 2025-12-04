@@ -52,25 +52,26 @@ function mutualinformation_exact(f::F, localdims::AbstractVector{<:Integer}) whe
     # Compute mutual information for all pairs of sites
     MI_matrix = zeros(Float64, L, L)
 
-    for A in 1:L
-        for B in 1:L
-            if A == B
-                MI_matrix[A, B] = 0.0
-            else
-                # Compute reduced density matrices
-                ρ_AB = partial_trace_to_sites(ρ, localdims, [A, B])
-                ρ_A = partial_trace_to_sites(ρ_AB, [localdims[A], localdims[B]], [1])
-                ρ_B = partial_trace_to_sites(ρ_AB, [localdims[A], localdims[B]], [2])
+    # Generate all pairs to enable parallel computation
+    pairs = [(A, B) for A in 1:L for B in 1:L]
 
-                # Compute von Neumann entropies
-                S_A = von_neumann_entropy(ρ_A)
-                S_B = von_neumann_entropy(ρ_B)
-                S_AB = von_neumann_entropy(ρ_AB)
+    Threads.@threads for (A, B) in pairs
+        if A == B
+            MI_matrix[A, B] = 0.0
+        else
+            # Compute reduced density matrices
+            ρ_AB = partial_trace_to_sites(ρ, localdims, [A, B])
+            ρ_A = partial_trace_to_sites(ρ_AB, [localdims[A], localdims[B]], [1])
+            ρ_B = partial_trace_to_sites(ρ_AB, [localdims[A], localdims[B]], [2])
 
-                # Mutual information: I(A:B) = S(A) + S(B) - S(AB)
-                # Clamp to non-negative to handle numerical errors
-                MI_matrix[A, B] = max(0.0, S_A + S_B - S_AB)
-            end
+            # Compute von Neumann entropies
+            S_A = von_neumann_entropy(ρ_A)
+            S_B = von_neumann_entropy(ρ_B)
+            S_AB = von_neumann_entropy(ρ_AB)
+
+            # Mutual information: I(A:B) = S(A) + S(B) - S(AB)
+            # Clamp to non-negative to handle numerical errors
+            MI_matrix[A, B] = max(0.0, S_A + S_B - S_AB)
         end
     end
 

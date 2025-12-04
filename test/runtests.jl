@@ -29,6 +29,12 @@ println("="^70)
     println("="^70)
     include("test_sampling.jl")
 
+    # # Include three-method comparison tests
+    # println("\n" * "="^70)
+    # println("Testing All Three Methods (Exact vs Uniform vs Hybrid)")
+    # println("="^70)
+    # include("test_three_methods.jl")
+
 end
 
 println("\n" * "="^70)

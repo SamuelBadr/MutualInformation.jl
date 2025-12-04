@@ -8,25 +8,35 @@ import QuanticsGrids as QG
 import MutualInformation as MI
 
 # Define the quantics representation parameters
-R = 22  # Number of qubits
-indextable = [[[(:x, r)] for r in 1:(R÷2)]; [[(:y, r)] for r in 1:(R÷2)]]
-grid = QG.DiscretizedGrid((:x, :y), indextable; lower_bound=(-1π, -1π), upper_bound=(+1π, +1π))
+Rk = 10
+Rnu = 10
+w_inds = [[(:w, r)] for r in 1:Rnu]
+x_inds = [[(:kx, r)] for r in 1:Rk]
+y_inds = [[(:ky, r)] for r in 1:Rk]
+indextable = [w_inds; x_inds; y_inds]
+R = length(indextable)  # Number of qubits
+# indextable = collect(Iterators.flatten(zip(x_inds, y_inds)))
+wmax = 5.0
+lower_bound = (-wmax, -1π, -1π)
+upper_bound = (+wmax, +1π, +1π)
+grid = QG.DiscretizedGrid((:w, :kx, :ky), indextable; lower_bound, upper_bound)
 
 # Define the original function
 disp(k) = -2 * sum(cos, k)
-f(k; w=2.0, δ=0.1) = 1 / (w - disp(k) + im * δ)
+f(k; δ=0.1) = 1 / (k[1] - disp(k[2:end]) + im * δ)
 
 # Define the quantics version of the function
 qf(qx) = f(QG.quantics_to_origcoord(grid, qx))
 
 # Compute the mutual information matrix
-# Uses unified API - automatically selects exact method since R=9 < 14
 println("Computing mutual information matrix for R=$R qubits...")
-MI_matrix = MI.mutualinformation(qf, R; method=:sampled, n_samples=40_000)
+MI_matrix = MI.mutualinformation(qf, R; method=:sampled, n_samples=10_000_000)
 
 println("\nMutual Information Matrix:")
 display(MI_matrix)
 println()
+
+##
 
 # Create a heatmap visualization
 fig = Figure(size=(800, 700))
@@ -34,7 +44,7 @@ fig = Figure(size=(800, 700))
 ax = Axis(fig[1, 1],
     xlabel="Site B",
     ylabel="Site A",
-    title="Mutual Information I(A:B) for f(x) = sin(20πx)·exp(-x²) [Log Scale]",
+    title="Mutual Information I(A:B) for G(w, kx, ky) [Log Scale]",
     aspect=DataAspect()
 )
 
@@ -45,9 +55,13 @@ min_nonzero = minimum(MI_matrix[MI_matrix.>0])
 epsilon = min_nonzero / 10  # Use value smaller than minimum
 MI_matrix_log[MI_matrix_log.==0] .= epsilon
 
+# for i in axes(MI_matrix_log, 1)
+#     MI_matrix_log[i, i] = NaN
+# end
+
 # Plot the heatmap with logarithmic color scale
 hm = heatmap!(ax, MI_matrix_log,
-    colormap=:viridis,
+    colormap=:linear_tritanopic_krjcw_5_98_c46_n256,
     colorscale=log10,
     colorrange=(epsilon, maximum(MI_matrix))
 )
@@ -55,36 +69,29 @@ hm = heatmap!(ax, MI_matrix_log,
 # Add colorbar with log scale
 Colorbar(fig[1, 2], hm,
     label="Mutual Information (nats)",
-    scale=log10,
-    ticks=LogTicks(WilkinsonTicks(5))
+    # scale=log10,
+    ticks=LogTicks(WilkinsonTicks(10))
 )
 
-# Add text annotations with values
-for i in 1:R
-    for j in 1:R
-        value = MI_matrix[i, j]
-        # Choose text color based on log-scale position
-        log_value = value > 0 ? log10(value) : log10(epsilon)
-        log_max = log10(maximum(MI_matrix))
-        log_min = log10(epsilon)
-        normalized_position = (log_value - log_min) / (log_max - log_min)
-        text_color = normalized_position > 0.5 ? :white : :black
+# Set axis properties with labels from indextable
+# Create labels from indextable structure
+subscript_digits = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉']
 
-        # text!(ax, j, i,
-        #     text=(@sprintf "%.3e" value),
-        #     align=(:center, :center),
-        #     color=text_color,
-        #     fontsize=10
-        # )
-    end
+# Helper function to convert number to subscript
+to_subscript(n::Int) = join(subscript_digits[d+1] for d in reverse(digits(n)))
+
+tick_labels = String[]
+for idx_group in indextable
+    # Each group is like [(:x, 1)] or [(:y, 2)]
+    coord, level = idx_group[1]
+    push!(tick_labels, string(coord) * to_subscript(level))
 end
 
-# Set axis properties
-ax.xticks = 1:R
-ax.yticks = 1:R
+ax.xticks = (1:R, tick_labels)
+ax.yticks = (1:R, tick_labels)
 
 # Save the figure
-output_file = "mutual_information_matrix.png"
+output_file = "mutual_information_matrix.pdf"
 save(output_file, fig)
 println("Plot saved to: $output_file")
 

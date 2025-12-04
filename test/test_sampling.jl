@@ -15,9 +15,9 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
 @testset "Sampling Method Tests" begin
 
     @testset "Basic properties" begin
-        # Test that sampled method returns correct structure
+        # Test that uniform sampling method returns correct structure
         len = 5
-        MI_matrix = MI.mutualinformation_sampled(f_test, len; n_samples=10000)
+        MI_matrix = MI.mutualinformation_uniform(f_test, len; n_samples=10000)
 
         # Test matrix shape
         @test size(MI_matrix) == (len, len)
@@ -37,8 +37,8 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         len = 5
         n_samples = 500000
 
-        MI1 = MI.mutualinformation_sampled(f_test, len; n_samples)
-        MI2 = MI.mutualinformation_sampled(f_test, len; n_samples)
+        MI1 = MI.mutualinformation_uniform(f_test, len; n_samples)
+        MI2 = MI.mutualinformation_uniform(f_test, len; n_samples)
 
         # Results should be similar but not identical (statistical variation)
         # Allow up to 50% relative difference due to sampling noise for small MI values
@@ -52,7 +52,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
 
         MI_exact = MI.mutualinformation_exact(f_test, fill(2, len))
         # Use more samples for better accuracy in this accuracy test
-        MI_sampled = MI.mutualinformation_sampled(f_test, len; n_samples=500000)
+        MI_sampled = MI.mutualinformation_uniform(f_test, len; n_samples=500000)
 
         # Check that sampled values are in reasonable range
         # Note: Sampling has inherent statistical noise and computes Shannon entropy
@@ -66,7 +66,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         # Test with a smooth function with nearest-neighbor correlations
         len = 10
 
-        MI_matrix = MI.mutualinformation_sampled(f_test, len; n_samples=50000)
+        MI_matrix = MI.mutualinformation_uniform(f_test, len; n_samples=50000)
 
         # For smooth Gaussian-like functions, MI should decay with distance
         # This is a qualitative test
@@ -83,7 +83,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         end
 
         len = 8
-        MI_matrix = MI.mutualinformation_sampled(f_chain, len; n_samples=100000)
+        MI_matrix = MI.mutualinformation_uniform(f_chain, len; n_samples=100000)
 
         # Check that nearest neighbors have higher MI than distant pairs
         # Average nearest-neighbor MI
@@ -102,7 +102,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         len = 20
 
         # Should complete without error
-        MI_matrix = MI.mutualinformation_sampled(f_test, len; n_samples=50000)
+        MI_matrix = MI.mutualinformation_uniform(f_test, len; n_samples=50000)
 
         @test size(MI_matrix) == (len, len)
         @test MI_matrix ≈ MI_matrix' atol = 1e-10
@@ -113,7 +113,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         # Test that we can handle len=30 (infeasible for exact method)
         len = 30
 
-        MI_matrix = MI.mutualinformation_sampled(f_test, len; n_samples=50000)
+        MI_matrix = MI.mutualinformation_uniform(f_test, len; n_samples=50000)
 
         @test size(MI_matrix) == (len, len)
         @test MI_matrix ≈ MI_matrix' atol = 1e-10
@@ -129,8 +129,8 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         MI_exact = MI.mutualinformation_exact(f_test, fill(2, len))
 
         # Test with different sample sizes
-        MI_small = MI.mutualinformation_sampled(f_test, len; n_samples=5000)
-        MI_large = MI.mutualinformation_sampled(f_test, len; n_samples=50000)
+        MI_small = MI.mutualinformation_uniform(f_test, len; n_samples=5000)
+        MI_large = MI.mutualinformation_uniform(f_test, len; n_samples=50000)
 
         # Compute errors
         error_small = _mean(abs.(MI_exact - MI_small))
@@ -150,7 +150,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         f(x) = exp(-x^2)
         qf(qx) = f(QG.quantics_to_origcoord(grid, qx))
 
-        MI_matrix = MI.mutualinformation_sampled(qf, R; n_samples=50000)
+        MI_matrix = MI.mutualinformation_uniform(qf, R; n_samples=50000)
 
         # Basic checks
         @test size(MI_matrix) == (R, R)
@@ -164,7 +164,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         f_complex(x) = exp(im * sum(x)) * f_test(x)
         len = 5
 
-        MI_matrix = MI.mutualinformation_sampled(f_complex, len; n_samples=50000)
+        MI_matrix = MI.mutualinformation_uniform(f_complex, len; n_samples=50000)
 
         @test size(MI_matrix) == (len, len)
         @test MI_matrix ≈ MI_matrix' atol = 1e-10
@@ -178,7 +178,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         len = 3
 
         # Should throw an error
-        @test_throws ErrorException MI.mutualinformation_sampled(f, len; n_samples=100)
+        @test_throws ErrorException MI.mutualinformation_uniform(f, len; n_samples=100)
     end
 
 
@@ -187,15 +187,15 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         len = 5
 
         # Small sample size
-        MI_1k = MI.mutualinformation_sampled(f_test, len; n_samples=1000)
+        MI_1k = MI.mutualinformation_uniform(f_test, len; n_samples=1000)
         @test size(MI_1k) == (len, len)
 
         # Medium sample size
-        MI_10k = MI.mutualinformation_sampled(f_test, len; n_samples=10000)
+        MI_10k = MI.mutualinformation_uniform(f_test, len; n_samples=10000)
         @test size(MI_10k) == (len, len)
 
         # Large sample size
-        MI_100k = MI.mutualinformation_sampled(f_test, len; n_samples=100000)
+        MI_100k = MI.mutualinformation_uniform(f_test, len; n_samples=100000)
         @test size(MI_100k) == (len, len)
     end
 
@@ -204,7 +204,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         f_bell(x) = (x == [1, 1] || x == [2, 2]) ? 1.0 / sqrt(2) : 0.0
 
         MI_exact = MI.mutualinformation_exact(f_bell, [2, 2])
-        MI_sampled = MI.mutualinformation_sampled(f_bell, 2; n_samples=50000)
+        MI_sampled = MI.mutualinformation_uniform(f_bell, 2; n_samples=50000)
 
         # For very sparse states like Bell, uniform sampling significantly underestimates
         # The sampled method typically gets ~log(2) instead of 2*log(2) for Bell states
@@ -218,7 +218,7 @@ f_test(x) = exp(-0.5 * sum((x[i] - x[i+1])^2 for i in 1:length(x)-1))
         len = 7
 
         MI_exact = MI.mutualinformation_exact(f_test, fill(2, len))
-        MI_sampled = MI.mutualinformation_sampled(f_test, len; n_samples=100000)
+        MI_sampled = MI.mutualinformation_uniform(f_test, len; n_samples=100000)
 
         # Compute correlation between exact and sampled
         # Extract off-diagonal elements

@@ -7,7 +7,10 @@ using Random: default_rng
 export mutualinformation
 
 # Export individual methods for advanced users
-export mutualinformation_exact, mutualinformation_sampled
+export mutualinformation_exact, mutualinformation_uniform, mutualinformation_hybrid
+
+# Backward compatibility (deprecated)
+export mutualinformation_sampled  # Alias for mutualinformation_uniform
 
 # Include implementation files
 include("utils.jl")      # Shared utility functions
