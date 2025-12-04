@@ -59,24 +59,24 @@ Colorbar(fig[1, 2], hm,
 )
 
 # Add text annotations with values
-for i in 1:R
-    for j in 1:R
-        value = MI_matrix[i, j]
-        # Choose text color based on log-scale position
-        log_value = value > 0 ? log10(value) : log10(epsilon)
-        log_max = log10(maximum(MI_matrix))
-        log_min = log10(epsilon)
-        normalized_position = (log_value - log_min) / (log_max - log_min)
-        text_color = normalized_position > 0.5 ? :white : :black
+# for i in 1:R
+#     for j in 1:R
+#         value = MI_matrix[i, j]
+#         # Choose text color based on log-scale position
+#         log_value = value > 0 ? log10(value) : log10(epsilon)
+#         log_max = log10(maximum(MI_matrix))
+#         log_min = log10(epsilon)
+#         normalized_position = (log_value - log_min) / (log_max - log_min)
+#         text_color = normalized_position > 0.5 ? :white : :black
 
-        text!(ax, j, i,
-            text=string(round(value, sigdigits=3)),
-            align=(:center, :center),
-            color=text_color,
-            fontsize=10
-        )
-    end
-end
+#         text!(ax, j, i,
+#             text=string(round(value, sigdigits=3)),
+#             align=(:center, :center),
+#             color=text_color,
+#             fontsize=10
+#         )
+#     end
+# end
 
 # Set axis properties
 ax.xticks = 1:R

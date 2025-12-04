@@ -18,4 +18,9 @@ include("exact.jl")      # Exact computation methods
 include("sampling.jl")   # Sampling-based approximation
 include("api.jl")        # Unified API dispatcher
 
+# Include OptimalCommunicationTree submodule
+include("OptimalCommunicationTree/OptimalCommunicationTree.jl")
+using .OptimalCommunicationTree
+export OptimalCommunicationTree
+
 end # module MutualInformation
