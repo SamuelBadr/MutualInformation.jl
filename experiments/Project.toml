@@ -1,0 +1,10 @@
+[deps]
+Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
+MutualInformation = "fc1f205a-2370-473e-8a5a-7b378b76b007"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+QuanticsGrids = "634c7f73-3e90-4749-a1bd-001b8efc642d"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+TensorCrossInterpolation = "b261b2ec-6378-4871-b32e-9173bb050604"
+
+[sources]
+MutualInformation = {path = ".."}

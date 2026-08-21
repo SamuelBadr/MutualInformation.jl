@@ -7,7 +7,10 @@ Given a symmetric weight matrix W representing communication demands between nod
 finds a spanning tree T that minimizes ∑ᵢⱼ W[i,j] · dist_T(i,j), where dist_T(i,j)
 is the distance between nodes i and j in the tree.
 
-Supports degree constraints and uses simulated annealing for optimization.
+The trusted supported case is `max_deg=2`, which is exactly the weighted
+Minimum Linear Arrangement / Hamiltonian path problem used for MPS bit layouts.
+For this case the module uses exact enumeration on small instances and a
+multi-start permutation local search on larger instances.
 
 ## Visualization
 
@@ -22,7 +25,8 @@ module OptimalCommunicationTree
 using Graphs
 
 # Export main functions
-export solve_oct_problem, solve_oct, oct_cost
+export solve_oct_problem, solve_oct, solve_minla, exact_minla, heuristic_minla
+export oct_cost, minla_cost, path_graph_from_ordering, ordering_from_path
 export plot_tree
 
 # Include implementation files
@@ -47,8 +51,8 @@ Load it with `using CairoMakie` before calling this function.
 # Example
 ```julia
 using CairoMakie  # Required!
-result = solve_oct_problem(W, 4; max_iter=5000, verbose=true)
-fig = plot_tree(result.tree, W; save_path="my_tree.png")
+result = solve_oct_problem(W, 2; max_iter=5000, verbose=true)
+fig = plot_tree(result.tree, W; save_path="my_path.png")
 ```
 """
 function plot_tree end

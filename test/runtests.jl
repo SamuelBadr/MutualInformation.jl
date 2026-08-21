@@ -29,6 +29,30 @@ println("="^70)
     println("="^70)
     include("test_sampling.jl")
 
+    # Include OCT/MinLA path solver tests
+    println("\n" * "="^70)
+    println("Testing OCT/MinLA Path Solver")
+    println("="^70)
+    include("test_oct_minla.jl")
+
+    # Include quantics layout tests
+    println("\n" * "="^70)
+    println("Testing Quantics Layout")
+    println("="^70)
+    include("test_quantics_layout.jl")
+
+    # Include generalized MI tests
+    println("\n" * "="^70)
+    println("Testing Generalized MI")
+    println("="^70)
+    include("test_generalized_mi.jl")
+
+    # Include structured layout optimizer tests
+    println("\n" * "="^70)
+    println("Testing Structured Layout Optimizer")
+    println("="^70)
+    include("test_layout_optimizer.jl")
+
     # # Include three-method comparison tests
     # println("\n" * "="^70)
     # println("Testing All Three Methods (Exact vs Uniform vs Hybrid)")

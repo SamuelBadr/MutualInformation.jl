@@ -23,8 +23,8 @@ Visualize the tree with edge weights mapped to line thickness.
 # Example
 ```julia
 using CairoMakie  # Must load CairoMakie to enable plotting
-result = solve_oct_problem(W, 4; max_iter=5000, verbose=true)
-fig = plot_tree(result.tree, W; save_path="my_tree.png")
+result = solve_oct_problem(W, 2; max_iter=5000, verbose=true)
+fig = plot_tree(result.tree, W; save_path="my_path.png")
 ```
 """
 function OptimalCommunicationTree.plot_tree(tree::SimpleGraph, W::Matrix{Float64};

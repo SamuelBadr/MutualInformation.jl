@@ -26,3 +26,7 @@ Thumbs.db
 *.png
 *.pdf
 *.svg
+
+# Experiment outputs (regenerable)
+experiments/out_*.csv
+experiments/out_*.txt
